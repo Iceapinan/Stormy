@@ -70,6 +70,8 @@ class MainActivity : AppCompatActivity() {
         currentWeather.precipChance = currently.getDouble("precipProbability")
         currentWeather.summary = currently.getString("summary")
         currentWeather.temperature = currently.getDouble("temperature")
+        currentWeather.timeZone = timezone
+        Log.d(TAG, currentWeather.getFormattedTime())
         return currentWeather
 
     }
