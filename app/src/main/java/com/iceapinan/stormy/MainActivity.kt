@@ -44,13 +44,11 @@ class MainActivity : AppCompatActivity(), OnLocationUpdatedListener {
     lateinit var progressBar : ProgressBar
     lateinit private var provider: LocationGooglePlayServicesProvider
     lateinit var addressLabel : TextView
-    lateinit var x : TextView
+    lateinit var view : View
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        ActivityCompat.requestPermissions(this, arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),LOCATION_PERMISSION_ID)
-
         setContentView(R.layout.activity_main)
+        checkPermission()
         timeLabel = findViewById(R.id.timeLabel)
         temperatureLabel = findViewById(R.id.temperatureLabel)
         humidityValue = findViewById(R.id.humidityValue)
@@ -67,6 +65,13 @@ class MainActivity : AppCompatActivity(), OnLocationUpdatedListener {
             showLast()
         }
 
+    }
+    private fun checkPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_ID)
+        }
     }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -127,7 +132,7 @@ class MainActivity : AppCompatActivity(), OnLocationUpdatedListener {
     }
 
     private fun getForecast(latitude: String, longitude: String) {
-        val apiKey = "66c21604b611711eccf266371dec11cf"
+        val apiKey = getString(R.string.apiKey)
         val unit = "units=si"
         val url = "https://api.darksky.net/forecast/$apiKey/$latitude,$longitude/?$unit"
         if (isNetworkAvailable()) {

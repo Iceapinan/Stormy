@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FC970B"
@@ -22,11 +23,11 @@
         android:id="@+id/timeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/temperatureLabel"
+        android:layout_centerHorizontal="true"
         android:text="At 5:18AM it will be"
         android:textColor="#80FFFFFF"
-        android:textSize="18sp"
-        android:layout_alignTop="@+id/temperatureLabel"
-        android:layout_centerHorizontal="true" />
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/locationLabel"
@@ -51,6 +52,7 @@
         app:srcCompat="@drawable/cloudy_night" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/temperatureLabel"
@@ -58,8 +60,7 @@
         android:layout_marginLeft="60dp"
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
-        android:weightSum="100"
-        android:id="@+id/linearLayout">
+        android:weightSum="100">
 
         <LinearLayout
             android:layout_width="wrap_content"
