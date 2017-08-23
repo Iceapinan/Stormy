@@ -1,14 +1,18 @@
 package com.iceapinan.stormy
 
+import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.content.res.Resources
 import android.location.Address
 import android.location.Location
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.annotation.RequiresApi
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
@@ -26,12 +30,10 @@ import io.nlopez.smartlocation.SmartLocation
 
 
 
-
-
 class MainActivity : AppCompatActivity(), OnLocationUpdatedListener {
     private val TAG = this.javaClass.simpleName
     private var mCurrentWeather = CurrentWeather()
-    val LOCATION_PERMISSION_ID = 1001;
+    val LOCATION_PERMISSION_ID = 1;
     lateinit var timeLabel : TextView
     lateinit var temperatureLabel: TextView
     lateinit var humidityValue: TextView
@@ -42,8 +44,12 @@ class MainActivity : AppCompatActivity(), OnLocationUpdatedListener {
     lateinit var progressBar : ProgressBar
     lateinit private var provider: LocationGooglePlayServicesProvider
     lateinit var addressLabel : TextView
+    lateinit var x : TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        ActivityCompat.requestPermissions(this, arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),LOCATION_PERMISSION_ID)
+
         setContentView(R.layout.activity_main)
         timeLabel = findViewById(R.id.timeLabel)
         temperatureLabel = findViewById(R.id.temperatureLabel)
@@ -62,21 +68,20 @@ class MainActivity : AppCompatActivity(), OnLocationUpdatedListener {
         }
 
     }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-       super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_ID && grantResults.count() > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             startLocation()
         } else {
             alertUserAboutError()
         }
-
     }
     private fun showLast() {
         val lastLocation = SmartLocation.with(this).location().lastLocation
         if (lastLocation != null) {
             val latitude = lastLocation.latitude
             val longitude = lastLocation.longitude
+            geoCoder(lastLocation)
             getForecast(latitude.toString(),longitude.toString())
         }
 
@@ -98,7 +103,13 @@ class MainActivity : AppCompatActivity(), OnLocationUpdatedListener {
                 if (p1 != null && p1.size > 0) {
                     val result: Address = p1[0];
                     runOnUiThread {
-                        addressLabel.text = result.adminArea + ", " + result.countryName
+                        val text = result.adminArea + ", " + result.countryName
+                        if (text.length > 30) {
+                            addressLabel.text = result.adminArea
+                        } else {
+                            addressLabel.text = text
+                        }
+
                     }
                 }
             }
