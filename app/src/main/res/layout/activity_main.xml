@@ -9,25 +9,14 @@
 
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/temperatureLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="100"
+        android:text="--"
         android:textColor="@android:color/background_light"
         android:textSize="150sp" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/textView"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="50dp"
-        app:srcCompat="@drawable/degree" />
 
     <TextView
         android:id="@+id/timeLabel"
@@ -36,14 +25,14 @@
         android:text="At 5:18AM it will be"
         android:textColor="#80FFFFFF"
         android:textSize="18sp"
-        android:layout_alignTop="@+id/textView"
+        android:layout_alignTop="@+id/temperatureLabel"
         android:layout_centerHorizontal="true" />
 
     <TextView
         android:id="@+id/locationLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/textView"
+        android:layout_above="@+id/temperatureLabel"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="60dp"
         android:text="Bangkok, Thailand"
@@ -57,13 +46,14 @@
         android:layout_alignBottom="@+id/locationLabel"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_marginBottom="24dp"
         android:layout_marginLeft="32dp"
         app:srcCompat="@drawable/cloudy_night" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
+        android:layout_below="@+id/temperatureLabel"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="60dp"
         android:layout_marginTop="10dp"
@@ -90,7 +80,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                android:text="0.88"
+                android:text="--"
                 android:textColor="@android:color/background_light"
                 android:textSize="24sp" />
 
@@ -115,7 +105,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                android:text="100%"
+                android:text="--"
                 android:textColor="@android:color/background_light"
                 android:textSize="24sp" />
         </LinearLayout>
@@ -123,14 +113,31 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textView8"
+        android:id="@+id/summaryLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/linearLayout"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
         android:gravity="center_horizontal"
-        android:text="Stormy with a chance of meatballs"
+        android:text="Getting current weather..."
         android:textColor="@android:color/background_light"
         android:textSize="18dp" />
+
+    <ImageView
+        android:id="@+id/refreshImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="26dp"
+        app:srcCompat="@drawable/refresh" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp" />
 </RelativeLayout>

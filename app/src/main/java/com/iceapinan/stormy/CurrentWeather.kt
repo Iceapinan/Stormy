@@ -12,7 +12,7 @@ class CurrentWeather() {
     var icon: String? = null
     var time: Long = 0
     var timeZone: String? = null
-    var temperature: Double = 0.toDouble()
+    var temperature: Int = 0
     var humidity: Double = 0.toDouble()
     var precipChance: Double = 0.toDouble()
     var summary: String? = null
@@ -23,6 +23,12 @@ class CurrentWeather() {
             val dateTime = Date(time * 1000)
             val timeString = formatter.format(dateTime)
             return timeString
+    }
+
+    fun getPrecipChance() : Int {
+        // Convert to Percentage
+        val precipPercentage : Double = precipChance * 100
+        return Math.round(precipPercentage).toInt()
     }
 
     fun getIconId() : Int {
