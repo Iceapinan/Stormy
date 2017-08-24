@@ -21,8 +21,7 @@ class CurrentWeather() {
         val formatter : SimpleDateFormat = SimpleDateFormat("h:mm a")
         formatter.timeZone = TimeZone.getTimeZone(timeZone)
             val dateTime = Date(time * 1000)
-            val timeString = formatter.format(dateTime)
-            return timeString
+        return formatter.format(dateTime)
     }
 
     fun getPrecipChance() : Int {

@@ -10,14 +10,9 @@ import android.net.NetworkInfo
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.annotation.RequiresApi
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import io.nlopez.smartlocation.*
 import java.io.IOException
@@ -25,60 +20,61 @@ import okhttp3.*
 import org.json.JSONException
 import org.json.JSONObject
 import io.nlopez.smartlocation.location.providers.LocationGooglePlayServicesProvider
-import io.nlopez.smartlocation.OnReverseGeocodingListener
 import io.nlopez.smartlocation.SmartLocation
-
-
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), OnLocationUpdatedListener {
+    override fun onLocationUpdated(p0: Location?) {
+        showLocation(p0)
+    }
+
     private val TAG = this.javaClass.simpleName
     private var mCurrentWeather = CurrentWeather()
-    val LOCATION_PERMISSION_ID = 1;
-    lateinit var timeLabel : TextView
-    lateinit var temperatureLabel: TextView
-    lateinit var humidityValue: TextView
-    lateinit var precipValue: TextView
-    lateinit var summaryLabel: TextView
-    lateinit var iconImageView : ImageView
-    lateinit var refreshImageView : ImageView
-    lateinit var progressBar : ProgressBar
-    lateinit private var provider: LocationGooglePlayServicesProvider
-    lateinit var addressLabel : TextView
-    lateinit var view : View
+    val LOCATION_PERMISSION_ID = 6;
+    lateinit var provider : LocationGooglePlayServicesProvider
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         checkPermission()
-        timeLabel = findViewById(R.id.timeLabel)
-        temperatureLabel = findViewById(R.id.temperatureLabel)
-        humidityValue = findViewById(R.id.humidityValue)
-        precipValue = findViewById(R.id.precipValue)
-        summaryLabel = findViewById(R.id.summaryLabel)
-        iconImageView = findViewById(R.id.iconImageView)
-        refreshImageView = findViewById(R.id.refreshImageView)
-        progressBar = findViewById(R.id.progressBar)
-        addressLabel = findViewById(R.id.locationLabel)
-        startLocation()
-        progressBar.visibility = View.INVISIBLE
-        showLast()
+
         refreshImageView.setOnClickListener {
             showLast()
         }
 
+
     }
     private fun checkPermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_ID)
+        // If user's device version is greater than Android Marshmallow
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                    val alert = AlertDialog.Builder(this).setTitle("Location Permission")
+                            .setMessage("Hi there! We can't display weather info without the location permission, " +
+                                    "could you please grant it?")
+                            .setPositiveButton("Yep") { _, _ -> requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_ID) }
+                            .setNegativeButton("No thanks") { _, _ ->
+                                val context : Context? = MainActivity()
+                                Toast.makeText(context!!,":(",Toast.LENGTH_SHORT)
+                            }
+                            .show()
+                } else {
+                    requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_ID)
+                }
+            } else {
+                startLocation()
+                showLast()
+            }
+        } else {
+            startLocation()
+            showLast()
         }
     }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_ID && grantResults.count() > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == LOCATION_PERMISSION_ID && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             startLocation()
-        } else {
-            alertUserAboutError()
+            showLast()
         }
     }
     private fun showLast() {
@@ -98,38 +94,33 @@ class MainActivity : AppCompatActivity(), OnLocationUpdatedListener {
             val longitude = location.longitude
             geoCoder(location)
             getForecast(latitude.toString(),longitude.toString())
-
         }
 
     }
     private fun geoCoder(location: Location) {
-        SmartLocation.with(this).geocoding().reverse(location, object : OnReverseGeocodingListener {
-            override fun onAddressResolved(p0: Location?, p1: MutableList<Address>?) {
-                if (p1 != null && p1.size > 0) {
-                    val result: Address = p1[0];
-                    runOnUiThread {
-                        val text = result.adminArea + ", " + result.countryName
-                        if (text.length > 30) {
-                            addressLabel.text = result.adminArea
-                        } else {
-                            addressLabel.text = text
-                        }
-
+        SmartLocation.with(this).geocoding().reverse(location) { _, p1 ->
+            if (p1 != null && p1.size > 0) {
+                val result: Address = p1[0];
+                runOnUiThread {
+                    val text = result.adminArea + ", " + result.countryName
+                    if (text.length > 30) {
+                        locationLabel.text = result.adminArea
+                    } else {
+                        locationLabel.text = text
                     }
+
                 }
             }
-        })
+        }
     }
 
     private fun startLocation() {
         provider = LocationGooglePlayServicesProvider()
         provider.setCheckLocationSettings(true)
         val smartLocation = SmartLocation.Builder(this).logging(true).build()
-        smartLocation.location(provider).start(this)
+        smartLocation.location(provider).continuous().start(this)
     }
-    override fun onLocationUpdated(location: Location?) {
-        showLocation(location)
-    }
+
 
     private fun getForecast(latitude: String, longitude: String) {
         val apiKey = getString(R.string.apiKey)
