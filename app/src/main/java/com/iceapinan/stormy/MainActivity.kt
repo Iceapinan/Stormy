@@ -30,13 +30,13 @@ class MainActivity : AppCompatActivity(), OnLocationUpdatedListener {
 
     private val TAG = this.javaClass.simpleName
     private var mCurrentWeather = CurrentWeather()
-    val LOCATION_PERMISSION_ID = 6;
-    lateinit var provider : LocationGooglePlayServicesProvider
+    private val LOCATION_PERMISSION_ID = 6;
+    lateinit private var provider : LocationGooglePlayServicesProvider
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        progressBar.visibility = View.INVISIBLE
         checkPermission()
-
         refreshImageView.setOnClickListener {
             showLast()
         }
@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity(), OnLocationUpdatedListener {
         provider = LocationGooglePlayServicesProvider()
         provider.setCheckLocationSettings(true)
         val smartLocation = SmartLocation.Builder(this).logging(true).build()
-        smartLocation.location(provider).continuous().start(this)
+        smartLocation.location(provider).start(this)
     }
 
 
@@ -183,7 +183,6 @@ class MainActivity : AppCompatActivity(), OnLocationUpdatedListener {
         precipValue.text = mCurrentWeather.getPrecipChance().toString() + "%"
         summaryLabel.text = mCurrentWeather.summary.toString()
         iconImageView.setImageResource(mCurrentWeather.getIconId())
-
     }
 
     @Throws (JSONException:: class)
