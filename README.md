@@ -1,7 +1,7 @@
 # Stormy
 Simple Weather App for Android
 
-<img src="http://i.imgur.com/UTxkAlq.png" width="40%">
+<img src="https://i.imgur.com/kEAYDyk.png?1" width="40%">
 
 ___
 ### LICENSE
